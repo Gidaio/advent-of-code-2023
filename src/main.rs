@@ -8,7 +8,13 @@ use std::time::Instant;
 fn main() {
     run_puzzle(
         "Day 1, Part 1",
-        day1::sum_calibration_values,
+        day1::part1::sum_calibration_values,
+        "inputs/day1.txt",
+    );
+
+    run_puzzle(
+        "Day 1, Part 2",
+        day1::part2::sum_calibration_values,
         "inputs/day1.txt",
     );
 }
