@@ -1,4 +1,5 @@
 mod day1;
+mod day2;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -17,6 +18,12 @@ fn main() {
         day1::part2::sum_calibration_values,
         "inputs/day1.txt",
     );
+
+    run_puzzle(
+        "Day 2, Part 1",
+        day2::part1::sum_impossible_game_ids,
+        "inputs/day2.txt",
+    )
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
