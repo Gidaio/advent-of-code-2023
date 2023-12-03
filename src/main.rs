@@ -1,5 +1,6 @@
 mod day1;
 mod day2;
+mod day3;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -29,6 +30,12 @@ fn main() {
         "Day 2, Part 2",
         day2::part2::sum_cube_powers,
         "inputs/day2.txt",
+    );
+
+    run_puzzle(
+        "Day 3, Part 1",
+        day3::part1::sum_part_numbers,
+        "inputs/day3.txt",
     );
 }
 
