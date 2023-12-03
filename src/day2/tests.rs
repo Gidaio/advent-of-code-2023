@@ -1,4 +1,6 @@
-use super::{part1::sum_impossible_game_ids, Day2Error, Game, Pull, PuzzleState};
+use super::part1::sum_impossible_game_ids;
+use super::part2::sum_cube_powers;
+use super::{Day2Error, Game, Pull, PuzzleState};
 
 #[test]
 fn parses_colors() {
@@ -102,12 +104,23 @@ fn parses_a_game() {
 }
 
 #[test]
-fn provided_example() {
+fn provided_example_part1() {
     let state: PuzzleState = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\nGame 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\nGame 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\nGame 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\nGame 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green".try_into().unwrap();
     println!("{:#?}", state);
     let result = sum_impossible_game_ids(state);
     match result {
         Ok(sum) => assert_eq!(sum, 8),
+        Err(err) => panic!("Got error {}", err),
+    }
+}
+
+#[test]
+fn provided_example_part2() {
+    let state: PuzzleState = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\nGame 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\nGame 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\nGame 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\nGame 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green".try_into().unwrap();
+    println!("{:#?}", state);
+    let result = sum_cube_powers(state);
+    match result {
+        Ok(sum) => assert_eq!(sum, 2286),
         Err(err) => panic!("Got error {}", err),
     }
 }

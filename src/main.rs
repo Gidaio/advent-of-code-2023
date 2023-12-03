@@ -23,7 +23,13 @@ fn main() {
         "Day 2, Part 1",
         day2::part1::sum_impossible_game_ids,
         "inputs/day2.txt",
-    )
+    );
+
+    run_puzzle(
+        "Day 2, Part 2",
+        day2::part2::sum_cube_powers,
+        "inputs/day2.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
