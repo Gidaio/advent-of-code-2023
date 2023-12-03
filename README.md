@@ -6,6 +6,7 @@ I'll write up what I learned and my thought process behind my solution each day.
 It worked great last year, and I learned a _ton_ about Rust.
 
 ## Day 1
+
 Whew! If I were just trying to solve this real quick in JavaScript or something,
 I'd've finished it _way_ faster. But I'm not; I'm trying to do "good practice"
 stuff, and also trying to experiment with Rust. It took a little while to get
@@ -62,3 +63,33 @@ parsing utility function later and you've turned either `"0"` or `"zero"` into
 which is a sign to me that I conceptually split the problem at the "right"
 place. I just duplicated the function, though, because I thought abstracting
 which function is called wouldn't be worth it.
+
+## Day 2
+
+Rust makes a lot of things very elegant, but string parsing is not one of them.
+At least, not that I've found to do it. Almost all of my time was spent parsing
+stuff.
+
+The approach I'm taking this year is mostly to parse the input into an easily
+usable state, then solve the problems with that state. The hardest part of state
+parsing today was handling the errors. I wanted to try to have slightly better
+error messages, which means I had to put a little but of data in the enum
+variants. I spent a decent amount of time hunting down why it wouldn't let me do
+that! Turns out I was trying to reference the function input in the errors, and
+it didn't like that. As a simplified example:
+
+```rust
+fn verify_string_is_cool(value: String) -> Result<Data, Error> {
+    if value.contains("cool") {
+        Ok(Data("Yup, it's cool."))
+    } else {
+        Err(Error::Uncool(&value))
+    }
+}
+```
+
+The "happy path" doesn't try to return references to data owned by the function,
+but the "unhappy" path does. That threw me off for a bit. Most strongly typed
+languages don't ask you to think about the error path, and weakly typed
+languages do even less. I think it's better to have to think about it, though.
+I'll just have to get used to it.
