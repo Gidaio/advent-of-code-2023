@@ -93,3 +93,26 @@ but the "unhappy" path does. That threw me off for a bit. Most strongly typed
 languages don't ask you to think about the error path, and weakly typed
 languages do even less. I think it's better to have to think about it, though.
 I'll just have to get used to it.
+
+## Day 3
+
+There's not much to day about this day. Parsing threw a small gotcha at me, but
+ended up not being too difficult. Solving the puzzle essentially boiled down to
+nested loops.
+
+I started parsing by just splitting on periods, then recording them based on
+their symbol or number. That posed a problem when I ran into `617*`: the
+aforementioned "gotcha." There's no period, but there are two distinct tokens in
+there. Splitting on periods won't split up these two tokens. I had to switch to
+a character-by-character approach. I've done that before, I was just hoping to
+not have to do it.
+
+I specifically chose to parse the tokens into two separate arrays for a couple
+of reasons. First, they're distinct types of tokens. Second, since I was looking
+for numbers adjacent to symbols, it made sense to be able to loop over numbers
+then check each symbol to see if it was adjacent. This proved to be a good
+decision, because for part two I had to loop over symbols then check each number
+to see if it was adjacent.
+
+If I _really_ wanted to be fast, I'd do some sort of spatial partitioning thing.
+I didn't need to. Even on the full input it runs in 16 ms.
