@@ -1,4 +1,5 @@
 pub mod part1;
+pub mod part2;
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};

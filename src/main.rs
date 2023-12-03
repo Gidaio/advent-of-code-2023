@@ -37,6 +37,12 @@ fn main() {
         day3::part1::sum_part_numbers,
         "inputs/day3.txt",
     );
+
+    run_puzzle(
+        "Day 3, Part 2",
+        day3::part2::sum_gear_ratios,
+        "inputs/day3.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
