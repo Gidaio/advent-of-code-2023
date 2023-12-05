@@ -116,3 +116,62 @@ to see if it was adjacent.
 
 If I _really_ wanted to be fast, I'd do some sort of spatial partitioning thing.
 I didn't need to. Even on the full input it runs in 16 ms.
+
+## Day 4
+
+I've really been learning a ton about `Result`s. Also iterators. Iterators are
+amazing, and I've been looking for places to insert them into my JavaScript/
+TypeScript, too! Rust just has so many utilities for it that they're so easy to
+use. Take, for example:
+
+```rust
+let winning_numbers = winning_numbers_str
+    .split(" ")
+    .filter_map(|number| {
+        if number.len() == 0 {
+            None
+        } else {
+            Some(number.parse::<usize>())
+        }
+    })
+    .collect::<Result<HashSet<_>, _>>()?;
+```
+
+The `filter_map` alone does a ton:
+
+1. It splits the string on spaces. (`.split(" ")`)
+1. It filters out empty strings, since some numbers have two spaces before them.
+   (`if number.len() == 0 { None }`)
+1. It parses what's left into a `usize`.
+
+And that's just the `filter_map`! After that's all done, we're left with an
+iterator of `Result<usize>`. The final bit of "magic" is `.collect`.
+
+First, `collect` can create any container that implements `FromIterator`. Up
+until now, I'd only ever done `Vec`s, but I wanted a set this time to make use
+of the fancy `intersection` function. I tried this out and it worked, but I
+didn't know why until I did some research. The cool part is, this means you can
+make your own types that you can `collect` into!
+
+Naively, `collect` would turn an iterator of `Result<T>`s into a collection of
+`Result<T>`s, i.e. `Vec<Result<T>>`. That's not often useful, so `collect` can
+"invert" that into a `Result` of the collection, i.e. `Result<Vec<T>>`. It's
+super handy. That means the final line is doing a lot of work, but it's written
+so simply!
+
+I'm comfortable enough with Rust now to, with a little effort, write things like
+
+```rust
+Ok(Puzzle(
+    value
+        .lines()
+        .map(|line| line.try_into())
+        .collect::<Result<Vec<_>, _>>()?,
+))
+```
+
+Previously, I would've busted my brain trying to figure out how to do that. I
+just did it in one (semantic) line!
+
+I love Rust. It's so much fun. I just keep coming back to one word when I try to
+describe it: "expressive".
