@@ -1,11 +1,14 @@
-use super::{Puzzle, Card, Day4Error};
+use super::{Card, Day4Error, Puzzle};
 
 pub fn sum_points(puzzle: Puzzle) -> Result<usize, Day4Error> {
     Ok(puzzle.0.into_iter().map(calculate_points_for_card).sum())
 }
 
 fn calculate_points_for_card(card: Card) -> usize {
-    let matching_numbers = card.winning_numbers.intersection(&card.scratched_numbers).count();
+    let matching_numbers = card
+        .winning_numbers
+        .intersection(&card.scratched_numbers)
+        .count();
     if matching_numbers == 0 {
         0
     } else {
@@ -15,8 +18,8 @@ fn calculate_points_for_card(card: Card) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use super::sum_points;
     use super::super::Puzzle;
+    use super::sum_points;
 
     #[test]
     fn provided_example() {

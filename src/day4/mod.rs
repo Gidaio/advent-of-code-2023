@@ -1,4 +1,5 @@
 pub mod part1;
+pub mod part2;
 
 use std::collections::HashSet;
 use std::error::Error;
