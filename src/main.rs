@@ -1,6 +1,7 @@
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -42,6 +43,12 @@ fn main() {
         "Day 3, Part 2",
         day3::part2::sum_gear_ratios,
         "inputs/day3.txt",
+    );
+
+    run_puzzle(
+        "Day 4, Part 1",
+        day4::part1::sum_points,
+        "inputs/day4.txt",
     );
 }
 
