@@ -2,6 +2,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -47,6 +48,12 @@ fn main() {
 
     run_puzzle("Day 4, Part 1", day4::part1::sum_points, "inputs/day4.txt");
     run_puzzle("Day 4, Part 2", day4::part2::count_cards, "inputs/day4.txt");
+
+    run_puzzle(
+        "Day 5, Part 1",
+        day5::part1::get_lowest_location,
+        "inputs/day5.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
