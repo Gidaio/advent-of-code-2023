@@ -9,12 +9,12 @@ pub fn get_lowest_location(puzzle: Puzzle) -> Result<isize, Day5Error> {
         numbers = numbers
             .into_iter()
             .map(|num| {
-                let matching_range = map
-                    .ranges
+                let matching_entry = map
+                    .entries
                     .iter()
-                    .find(|range| num >= range.from_start && num <= range.from_start + range.size);
-                if let Some(range) = matching_range {
-                    num - range.from_start + range.to_start
+                    .find(|entry| entry.source.contains(num));
+                if let Some(entry) = matching_entry {
+                    entry.map_number(num)
                 } else {
                     num
                 }

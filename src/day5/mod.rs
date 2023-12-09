@@ -16,7 +16,7 @@ pub struct Puzzle {
 struct Map {
     from: String,
     to: String,
-    ranges: Vec<Range>,
+    entries: Vec<MapEntry>,
 }
 
 impl Map {
@@ -28,7 +28,7 @@ impl Map {
             .split_once("-to-")
             .ok_or(Day5Error::InvalidMapHeader)?;
 
-        let mut ranges = Vec::<Range>::new();
+        let mut entries = Vec::<MapEntry>::new();
 
         while let Some(line) = lines.next() {
             let line = line?;
@@ -44,17 +44,16 @@ impl Map {
                 return Err(Day5Error::InvalidRange);
             }
 
-            ranges.push(Range {
-                to_start: nums[0],
-                from_start: nums[1],
-                size: nums[2],
+            entries.push(MapEntry {
+                destination: Range::from_size(nums[0], nums[2]),
+                source: Range::from_size(nums[1], nums[2]),
             });
         }
 
         Ok(Map {
             from: String::from(from),
             to: String::from(to),
-            ranges,
+            entries,
         })
     }
 
@@ -66,7 +65,7 @@ impl Map {
             .split_once("-to-")
             .ok_or(Day5Error::InvalidMapHeader)?;
 
-        let mut ranges = Vec::<Range>::new();
+        let mut entries = Vec::<MapEntry>::new();
 
         while let Some(line) = lines.next() {
             if line.trim().is_empty() {
@@ -81,26 +80,53 @@ impl Map {
                 return Err(Day5Error::InvalidRange);
             }
 
-            ranges.push(Range {
-                to_start: nums[0],
-                from_start: nums[1],
-                size: nums[2],
+            entries.push(MapEntry {
+                destination: Range::from_size(nums[0], nums[2]),
+                source: Range::from_size(nums[1], nums[2]),
             });
         }
 
         Ok(Map {
             from: String::from(from),
             to: String::from(to),
-            ranges,
+            entries,
         })
     }
 }
 
 #[derive(Debug, PartialEq)]
+struct MapEntry {
+    source: Range,
+    destination: Range,
+}
+
+impl MapEntry {
+    fn map_number(&self, num: isize) -> isize {
+        if self.source.contains(num) {
+            num - self.source.from + self.destination.from
+        } else {
+            num
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 struct Range {
-    from_start: isize,
-    to_start: isize,
-    size: isize,
+    from: isize,
+    to: isize,
+}
+
+impl Range {
+    fn from_size(start: isize, size: isize) -> Self {
+        Self {
+            from: start,
+            to: start + size,
+        }
+    }
+
+    fn contains(&self, num: isize) -> bool {
+        num >= self.from && num <= self.to
+    }
 }
 
 #[derive(Debug)]
@@ -199,7 +225,7 @@ impl Error for Day5Error {}
 
 #[cfg(test)]
 mod tests {
-    use super::{Map, Puzzle, Range};
+    use super::{Map, MapEntry, Puzzle, Range};
 
     #[test]
     fn parses_example() {
@@ -210,132 +236,114 @@ mod tests {
                 Map {
                     from: String::from("seed"),
                     to: String::from("soil"),
-                    ranges: vec![
-                        Range {
-                            to_start: 50,
-                            from_start: 98,
-                            size: 2,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(50, 2),
+                            source: Range::from_size(98, 2),
                         },
-                        Range {
-                            to_start: 52,
-                            from_start: 50,
-                            size: 48,
+                        MapEntry {
+                            destination: Range::from_size(52, 48),
+                            source: Range::from_size(50, 48),
                         },
                     ],
                 },
                 Map {
                     from: String::from("soil"),
                     to: String::from("fertilizer"),
-                    ranges: vec![
-                        Range {
-                            to_start: 0,
-                            from_start: 15,
-                            size: 37,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(0, 37),
+                            source: Range::from_size(15, 37),
                         },
-                        Range {
-                            to_start: 37,
-                            from_start: 52,
-                            size: 2,
+                        MapEntry {
+                            destination: Range::from_size(37, 2),
+                            source: Range::from_size(52, 2),
                         },
-                        Range {
-                            to_start: 39,
-                            from_start: 0,
-                            size: 15,
+                        MapEntry {
+                            destination: Range::from_size(39, 15),
+                            source: Range::from_size(0, 15),
                         },
                     ],
                 },
                 Map {
                     from: String::from("fertilizer"),
                     to: String::from("water"),
-                    ranges: vec![
-                        Range {
-                            to_start: 49,
-                            from_start: 53,
-                            size: 8,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(49, 8),
+                            source: Range::from_size(53, 8),
                         },
-                        Range {
-                            to_start: 0,
-                            from_start: 11,
-                            size: 42,
+                        MapEntry {
+                            destination: Range::from_size(0, 42),
+                            source: Range::from_size(11, 42),
                         },
-                        Range {
-                            to_start: 42,
-                            from_start: 0,
-                            size: 7,
+                        MapEntry {
+                            destination: Range::from_size(42, 7),
+                            source: Range::from_size(0, 7),
                         },
-                        Range {
-                            to_start: 57,
-                            from_start: 7,
-                            size: 4,
+                        MapEntry {
+                            destination: Range::from_size(57, 4),
+                            source: Range::from_size(7, 4),
                         },
                     ],
                 },
                 Map {
                     from: String::from("water"),
                     to: String::from("light"),
-                    ranges: vec![
-                        Range {
-                            to_start: 88,
-                            from_start: 18,
-                            size: 7,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(88, 7),
+                            source: Range::from_size(18, 7),
                         },
-                        Range {
-                            to_start: 18,
-                            from_start: 25,
-                            size: 70,
+                        MapEntry {
+                            destination: Range::from_size(18, 70),
+                            source: Range::from_size(25, 70),
                         },
                     ],
                 },
                 Map {
                     from: String::from("light"),
                     to: String::from("temperature"),
-                    ranges: vec![
-                        Range {
-                            to_start: 45,
-                            from_start: 77,
-                            size: 23,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(45, 23),
+                            source: Range::from_size(77, 23),
                         },
-                        Range {
-                            to_start: 81,
-                            from_start: 45,
-                            size: 19,
+                        MapEntry {
+                            destination: Range::from_size(81, 19),
+                            source: Range::from_size(45, 19),
                         },
-                        Range {
-                            to_start: 68,
-                            from_start: 64,
-                            size: 13,
+                        MapEntry {
+                            destination: Range::from_size(68, 13),
+                            source: Range::from_size(64, 13),
                         },
                     ],
                 },
                 Map {
                     from: String::from("temperature"),
                     to: String::from("humidity"),
-                    ranges: vec![
-                        Range {
-                            to_start: 0,
-                            from_start: 69,
-                            size: 1,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(0, 1),
+                            source: Range::from_size(69, 1),
                         },
-                        Range {
-                            to_start: 1,
-                            from_start: 0,
-                            size: 69,
+                        MapEntry {
+                            destination: Range::from_size(1, 69),
+                            source: Range::from_size(0, 69),
                         },
                     ],
                 },
                 Map {
                     from: String::from("humidity"),
                     to: String::from("location"),
-                    ranges: vec![
-                        Range {
-                            to_start: 60,
-                            from_start: 56,
-                            size: 37,
+                    entries: vec![
+                        MapEntry {
+                            destination: Range::from_size(60, 37),
+                            source: Range::from_size(56, 37),
                         },
-                        Range {
-                            to_start: 56,
-                            from_start: 93,
-                            size: 4,
+                        MapEntry {
+                            destination: Range::from_size(56, 4),
+                            source: Range::from_size(93, 4),
                         },
                     ],
                 },
