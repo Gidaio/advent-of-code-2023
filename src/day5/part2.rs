@@ -1,4 +1,4 @@
-use super::{Day5Error, Puzzle, Range, MapEntry};
+use super::{Day5Error, MapEntry, Puzzle, Range};
 
 pub fn get_lowest_range_location(puzzle: Puzzle) -> Result<isize, Day5Error> {
     let mut numbers = get_seed_ranges(&puzzle.seeds);
@@ -48,7 +48,7 @@ fn map_range_recursive(entries: &Vec<MapEntry>, range: Range) -> Vec<Range> {
 #[cfg(test)]
 mod tests {
     use super::super::{Puzzle, Range};
-    use super::{get_seed_ranges, get_lowest_range_location};
+    use super::{get_lowest_range_location, get_seed_ranges};
 
     #[test]
     fn can_get_seed_ranges() {

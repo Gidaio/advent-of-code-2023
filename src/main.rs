@@ -3,6 +3,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -59,6 +60,12 @@ fn main() {
         "Day 5, Part 2",
         day5::part2::get_lowest_range_location,
         "inputs/day5.txt",
+    );
+
+    run_puzzle(
+        "Day 6, Part 1",
+        day6::part1::multiply_winning_ways,
+        "inputs/day6.txt",
     );
 }
 
