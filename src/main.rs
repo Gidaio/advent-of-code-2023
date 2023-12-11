@@ -54,6 +54,12 @@ fn main() {
         day5::part1::get_lowest_location,
         "inputs/day5.txt",
     );
+
+    run_puzzle(
+        "Day 5, Part 2",
+        day5::part2::get_lowest_range_location,
+        "inputs/day5.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(

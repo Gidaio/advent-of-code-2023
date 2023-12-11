@@ -1,4 +1,5 @@
 pub mod part1;
+pub mod part2;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -129,14 +130,18 @@ impl MapEntry {
                     from: range.from,
                     to: self.source.from - 1,
                 })
-            } else { None };
+            } else {
+                None
+            };
 
             let right = if range.to > self.source.to {
                 Some(Range {
                     from: self.source.to + 1,
                     to: range.to,
                 })
-            } else { None };
+            } else {
+                None
+            };
 
             (
                 Range {
@@ -155,7 +160,10 @@ impl MapEntry {
                     to: self.destination.to,
                 },
                 None,
-                Some(Range { from: self.source.to + 1, to: range.to }),
+                Some(Range {
+                    from: self.source.to + 1,
+                    to: range.to,
+                }),
             )
         } else {
             // Self    |---|
@@ -165,12 +173,10 @@ impl MapEntry {
                     from: self.destination.from,
                     to: self.map_number(range.to),
                 },
-                Some(
-                    Range {
-                        from: range.from,
-                        to: self.source.from - 1,
-                    }
-                ),
+                Some(Range {
+                    from: range.from,
+                    to: self.source.from - 1,
+                }),
                 None,
             )
         }
@@ -203,13 +209,6 @@ impl Range {
 
     fn overlaps(&self, range: &Self) -> bool {
         self.contains_value(range.from) || self.contains_value(range.to)
-    }
-
-    fn merge(&self, range: &Self) -> Self {
-        Self {
-            from: self.from.min(range.from),
-            to: self.to.max(range.to),
-        }
     }
 }
 
@@ -470,14 +469,7 @@ mod tests {
     fn map_range_greater_equal() {
         let range = Range { from: 4, to: 8 };
         let result = MAP.map_range(&range);
-        assert_eq!(
-            result,
-            (
-                Range { from: 24, to: 28 },
-                None,
-                None,
-            )
-        );
+        assert_eq!(result, (Range { from: 24, to: 28 }, None, None,));
     }
 
     #[test]
@@ -487,14 +479,7 @@ mod tests {
     fn map_range_greater_less() {
         let range = Range { from: 4, to: 6 };
         let result = MAP.map_range(&range);
-        assert_eq!(
-            result,
-            (
-                Range { from: 24, to: 26 },
-                None,
-                None,
-            )
-        );
+        assert_eq!(result, (Range { from: 24, to: 26 }, None, None,));
     }
 
     #[test]
@@ -521,14 +506,7 @@ mod tests {
     fn map_range_equal_equal() {
         let range = Range { from: 2, to: 8 };
         let result = MAP.map_range(&range);
-        assert_eq!(
-            result,
-            (
-                Range { from: 22, to: 28 },
-                None,
-                None,
-            )
-        );
+        assert_eq!(result, (Range { from: 22, to: 28 }, None, None,));
     }
 
     #[test]
@@ -538,14 +516,7 @@ mod tests {
     fn map_range_equal_less() {
         let range = Range { from: 2, to: 6 };
         let result = MAP.map_range(&range);
-        assert_eq!(
-            result,
-            (
-                Range { from: 22, to: 26 },
-                None,
-                None,
-            )
-        );
+        assert_eq!(result, (Range { from: 22, to: 26 }, None, None,));
     }
 
     #[test]
