@@ -211,3 +211,41 @@ I was worried I'd have to do a pass between each mapping to merge ranges to keep
 the `Vec`s reasonably sized. Each mapping could theoretically fracture each
 range into _three_ (or maybe more!) ranges. Fortunately, I think the puzzle
 design is nice and doesn't proliferate too much.
+
+## Day 6
+
+There was exactly one interesting thing today: trying to concatenate numbers for
+part 2.
+
+Taking a `Vec<isize>` and converting it into a single `isize` was an interesting
+problem. It's the first time I'd approached it in Rust. The "standard" way to do
+this is to count the number of digits in each value and accumulate them up. When
+every number is one digit, it's easy.
+
+```rust
+vec![1, 2, 3, 4, 5].iter().reduce(|acc, val| acc * 10 + val);
+```
+
+The biggest challenge isn't the accumulation, it's counting how many digits are
+in the number. I eventually settled on repeatedly dividing and multiplying by
+10.
+
+```rust
+fn get_digit_multiplier(num: isize) -> isize {
+    let mut multiplier = 10;
+    let mut num = num;
+    while num >= 10 {
+        num /= 10;
+        multiplier *= 10;
+    }
+
+    multiplier
+}
+```
+
+That worked great. By directly calculating the multiplier instead of the number
+of digits, I avoided having to do a power (`10 ^ n`) afterwards.
+
+I think because I'm doing things in Rust, the difficulty curve is wonky. Some
+things that involve lots of string parsing are harder, and other things are way
+easier. Today was done in like, 15 minutes.
