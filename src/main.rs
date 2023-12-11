@@ -67,6 +67,12 @@ fn main() {
         day6::part1::multiply_winning_ways,
         "inputs/day6.txt",
     );
+
+    run_puzzle(
+        "Day 6, Part 2",
+        day6::part2::count_winning_ways,
+        "inputs/day6.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
