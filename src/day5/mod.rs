@@ -102,17 +102,86 @@ struct MapEntry {
 
 impl MapEntry {
     fn map_number(&self, num: isize) -> isize {
-        if self.source.contains(num) {
+        if self.source.contains_value(num) {
             num - self.source.from + self.destination.from
         } else {
             num
+        }
+    }
+
+    fn map_range(&self, range: &Range) -> (Range, Option<Range>, Option<Range>) {
+        if self.source.contains_range(range) {
+            // Self  |---------|   |-----|   |-----|   |-----|
+            // Other    |---|      |---|       |---|   |-----|
+            (
+                Range {
+                    from: self.map_number(range.from),
+                    to: self.map_number(range.to),
+                },
+                None,
+                None,
+            )
+        } else if range.contains_range(&self.source) {
+            // Self     |---|      |---|       |---|
+            // Other |---------|   |-----|   |-----|
+            let left = if range.from < self.source.from {
+                Some(Range {
+                    from: range.from,
+                    to: self.source.from - 1,
+                })
+            } else { None };
+
+            let right = if range.to > self.source.to {
+                Some(Range {
+                    from: self.source.to + 1,
+                    to: range.to,
+                })
+            } else { None };
+
+            (
+                Range {
+                    from: self.destination.from,
+                    to: self.destination.to,
+                },
+                left,
+                right,
+            )
+        } else if self.source.from < range.from {
+            // Self  |---|
+            // Other   |---|
+            (
+                Range {
+                    from: self.map_number(range.from),
+                    to: self.destination.to,
+                },
+                None,
+                Some(Range { from: self.source.to + 1, to: range.to }),
+            )
+        } else {
+            // Self    |---|
+            // Other |---|
+            (
+                Range {
+                    from: self.destination.from,
+                    to: self.map_number(range.to),
+                },
+                Some(
+                    Range {
+                        from: range.from,
+                        to: self.source.from - 1,
+                    }
+                ),
+                None,
+            )
         }
     }
 }
 
 #[derive(Debug, PartialEq)]
 struct Range {
+    // Inclusive
     from: isize,
+    // Also inclusive
     to: isize,
 }
 
@@ -120,12 +189,27 @@ impl Range {
     fn from_size(start: isize, size: isize) -> Self {
         Self {
             from: start,
-            to: start + size,
+            to: start + size - 1,
         }
     }
 
-    fn contains(&self, num: isize) -> bool {
+    fn contains_value(&self, num: isize) -> bool {
         num >= self.from && num <= self.to
+    }
+
+    fn contains_range(&self, range: &Self) -> bool {
+        self.contains_value(range.from) && self.contains_value(range.to)
+    }
+
+    fn overlaps(&self, range: &Self) -> bool {
+        self.contains_value(range.from) || self.contains_value(range.to)
+    }
+
+    fn merge(&self, range: &Self) -> Self {
+        Self {
+            from: self.from.min(range.from),
+            to: self.to.max(range.to),
+        }
     }
 }
 
@@ -226,6 +310,11 @@ impl Error for Day5Error {}
 #[cfg(test)]
 mod tests {
     use super::{Map, MapEntry, Puzzle, Range};
+
+    const MAP: MapEntry = MapEntry {
+        source: Range { from: 2, to: 8 },
+        destination: Range { from: 22, to: 28 },
+    };
 
     #[test]
     fn parses_example() {
@@ -355,5 +444,158 @@ mod tests {
             Ok(puzzle) => assert_eq!(puzzle, expected),
             Err(err) => panic!("Got error {}", err),
         }
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //     |-----|
+    fn map_range_greater_greater() {
+        let range = Range { from: 4, to: 10 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 24, to: 28 },
+                None,
+                Some(Range { from: 9, to: 10 })
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //     |---|
+    fn map_range_greater_equal() {
+        let range = Range { from: 4, to: 8 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 24, to: 28 },
+                None,
+                None,
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //     |-|
+    fn map_range_greater_less() {
+        let range = Range { from: 4, to: 6 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 24, to: 26 },
+                None,
+                None,
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //   |-------|
+    fn map_range_equal_greater() {
+        let range = Range { from: 2, to: 10 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 28 },
+                None,
+                Some(Range { from: 9, to: 10 }),
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //   |-----|
+    fn map_range_equal_equal() {
+        let range = Range { from: 2, to: 8 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 28 },
+                None,
+                None,
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    //   |---|
+    fn map_range_equal_less() {
+        let range = Range { from: 2, to: 6 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 26 },
+                None,
+                None,
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    // |---------|
+    fn map_range_less_greater() {
+        let range = Range { from: 0, to: 10 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 28 },
+                Some(Range { from: 0, to: 1 }),
+                Some(Range { from: 9, to: 10 }),
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    // |-------|
+    fn map_range_less_equal() {
+        let range = Range { from: 0, to: 8 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 28 },
+                Some(Range { from: 0, to: 1 }),
+                None,
+            )
+        );
+    }
+
+    #[test]
+    // 0123456789X
+    //   |-----|
+    // |-----|
+    fn map_range_less_less() {
+        let range = Range { from: 0, to: 6 };
+        let result = MAP.map_range(&range);
+        assert_eq!(
+            result,
+            (
+                Range { from: 22, to: 26 },
+                Some(Range { from: 0, to: 1 }),
+                None,
+            )
+        );
     }
 }

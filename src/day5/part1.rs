@@ -12,7 +12,7 @@ pub fn get_lowest_location(puzzle: Puzzle) -> Result<isize, Day5Error> {
                 let matching_entry = map
                     .entries
                     .iter()
-                    .find(|entry| entry.source.contains(num));
+                    .find(|entry| entry.source.contains_value(num));
                 if let Some(entry) = matching_entry {
                     entry.map_number(num)
                 } else {
