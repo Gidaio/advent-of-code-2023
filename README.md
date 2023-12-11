@@ -175,3 +175,39 @@ just did it in one (semantic) line!
 
 I love Rust. It's so much fun. I just keep coming back to one word when I try to
 describe it: "expressive".
+
+## Day 5
+
+The parsing for this one was slightly interesting. I probably could've just
+split on `\n\n` and then handled each map, but I decided to do a more "recursive
+descent" type parser. A trick I learned last year is to use `while let` loops
+instead of `for` loops. `for` loops borrow the _iterator_ for the entire
+duration of the loop, so you can't call `.next()` inside of the loop.
+`while let` loops don't borrow the iterator, only the result of the `.next()`
+call.
+
+The "part 2 twist" was a doozy for this one. Changing from mapping numbers to
+entire ranges required a lot of rethinking. Eventually it coalesced into
+something that I'm really happy with. The entire process mostly hinges on two
+functions.
+
+`MapEntry::map_range` takes a range and returns a 3-tuple
+`(Range, Option<Range>, Option<Range>)` corresponding to the mapped range, any
+leftovers on the left, and any leftovers on the right. It has to handle all nine
+cases of two ranges overlapping.
+
+`map_range_recursive` takes a bunch of `MapEntry`s and a `Range` to map. As you
+might expect, it's recursive. It first finds a `MapEntry` that overlaps with the
+range. (This is actually a potential bug and I'm lucky it didn't bite me in the
+butt. It's _possible_ that a single `Range` overlaps with multiple `MapEntry`s.)
+Then it calls itself recursively on any left and right straggling ranges. Once
+that's done, it compiles them all into a `Vec` and returns that.
+
+The core of the algorithm is the same as part 1, just mapping ranges instead of
+mapping single numbers. Then it just pulls out the lowest value of each range
+and returns the minimum.
+
+I was worried I'd have to do a pass between each mapping to merge ranges to keep
+the `Vec`s reasonably sized. Each mapping could theoretically fracture each
+range into _three_ (or maybe more!) ranges. Fortunately, I think the puzzle
+design is nice and doesn't proliferate too much.
