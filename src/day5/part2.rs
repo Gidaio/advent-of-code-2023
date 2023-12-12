@@ -16,7 +16,7 @@ pub fn get_lowest_range_location(puzzle: Puzzle) -> Result<isize, Day5Error> {
     Ok(numbers.into_iter().map(|range| range.from).min().unwrap())
 }
 
-fn get_seed_ranges(seeds: &Vec<isize>) -> Vec<Range> {
+fn get_seed_ranges(seeds: &[isize]) -> Vec<Range> {
     seeds
         .iter()
         .step_by(2)

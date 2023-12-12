@@ -60,15 +60,15 @@ impl TryFrom<&str> for Card {
         let (card_id, numbers) = value
             .split_once(": ")
             .ok_or(Day4Error::NoColonSeparator(String::from(value)))?;
-        let card_id: usize = (&card_id[5..]).trim().parse()?;
+        let card_id: usize = card_id[5..].trim().parse()?;
 
         let (winning_numbers, scratched_numbers) = numbers
             .split_once(" | ")
             .ok_or(Day4Error::NoPipe(String::from(value)))?;
         let winning_numbers = winning_numbers
-            .split(" ")
+            .split(' ')
             .filter_map(|number| {
-                if number.len() == 0 {
+                if number.is_empty() {
                     None
                 } else {
                     Some(number.parse::<usize>())
@@ -76,9 +76,9 @@ impl TryFrom<&str> for Card {
             })
             .collect::<Result<HashSet<_>, _>>()?;
         let scratched_numbers = scratched_numbers
-            .split(" ")
+            .split(' ')
             .filter_map(|number| {
-                if number.len() == 0 {
+                if number.is_empty() {
                     None
                 } else {
                     Some(number.parse::<usize>())

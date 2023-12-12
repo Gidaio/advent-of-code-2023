@@ -25,15 +25,15 @@ impl Map {
         lines: &mut Iter,
     ) -> Result<Self, Day5Error> {
         let header = lines.next().ok_or(Day5Error::NoMapHeader)??;
-        let (from, to) = (&header[0..header.len() - 5])
+        let (from, to) = header[0..header.len() - 5]
             .split_once("-to-")
             .ok_or(Day5Error::InvalidMapHeader)?;
 
         let mut entries = Vec::<MapEntry>::new();
 
-        while let Some(line) = lines.next() {
+        for line in lines {
             let line = line?;
-            if line == "" {
+            if line.is_empty() {
                 break;
             }
 
@@ -62,13 +62,13 @@ impl Map {
         lines: &mut Iter,
     ) -> Result<Self, Day5Error> {
         let header = lines.next().ok_or(Day5Error::NoMapHeader)?;
-        let (from, to) = (&header[0..header.len() - 5])
+        let (from, to) = header[0..header.len() - 5]
             .split_once("-to-")
             .ok_or(Day5Error::InvalidMapHeader)?;
 
         let mut entries = Vec::<MapEntry>::new();
 
-        while let Some(line) = lines.next() {
+        for line in lines {
             if line.trim().is_empty() {
                 break;
             }
@@ -233,7 +233,7 @@ impl TryFrom<File> for Puzzle {
         if !seeds.starts_with("seeds: ") {
             return Err(Day5Error::NoSeeds);
         }
-        let seeds = (&seeds[7..])
+        let seeds = seeds[7..]
             .split(' ')
             .map(|num| num.parse::<isize>())
             .collect::<Result<Vec<_>, _>>()?;
@@ -243,7 +243,7 @@ impl TryFrom<File> for Puzzle {
 
         let mut maps = Vec::<Map>::new();
 
-        while let Some(_) = lines.peek() {
+        while lines.peek().is_some() {
             maps.push(Map::from_buf_lines(&mut lines)?);
         }
 
@@ -261,7 +261,7 @@ impl TryFrom<&str> for Puzzle {
         if !seeds.starts_with("seeds: ") {
             return Err(Day5Error::NoSeeds);
         }
-        let seeds = (&seeds[7..])
+        let seeds = seeds[7..]
             .split(' ')
             .map(|num| num.parse::<isize>())
             .collect::<Result<Vec<_>, _>>()?;
@@ -271,7 +271,7 @@ impl TryFrom<&str> for Puzzle {
 
         let mut maps = Vec::<Map>::new();
 
-        while let Some(_) = lines.peek() {
+        while lines.peek().is_some() {
             maps.push(Map::from_str_lines(&mut lines)?);
         }
 

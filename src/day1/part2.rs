@@ -9,13 +9,13 @@ pub fn sum_calibration_values(state: State) -> Result<usize, Day1Error> {
     let results: Vec<usize> = state
         .0
         .iter()
-        .map(parse_calibration_value)
+        .map(|str| parse_calibration_value(str))
         .collect::<Result<Vec<usize>, Day1Error>>()?;
 
     Ok(results.iter().sum())
 }
 
-fn parse_calibration_value(line: &String) -> Result<usize, Day1Error> {
+fn parse_calibration_value(line: &str) -> Result<usize, Day1Error> {
     let mut earliest_match: Option<(usize, usize)> = None;
     let mut latest_match: Option<(usize, usize)> = None;
 
@@ -41,7 +41,7 @@ fn parse_calibration_value(line: &String) -> Result<usize, Day1Error> {
         }
     }
 
-    if let None = earliest_match {
+    if earliest_match.is_none() {
         return Err(Day1Error::NoDigits);
     }
 

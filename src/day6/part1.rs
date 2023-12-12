@@ -15,7 +15,7 @@ pub fn multiply_winning_ways(puzzle: Puzzle) -> Result<isize, Day6Error> {
 
             ways
         })
-        .fold(1, |product, num| product * num))
+        .product::<isize>())
 }
 
 #[cfg(test)]

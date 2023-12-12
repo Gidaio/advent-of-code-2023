@@ -14,7 +14,7 @@ pub fn count_winning_ways(puzzle: Puzzle) -> Result<usize, Day6Error> {
     Ok(ways)
 }
 
-fn concatenate_numbers(nums: &Vec<isize>) -> isize {
+fn concatenate_numbers(nums: &[isize]) -> isize {
     nums.iter()
         .fold(0, |acc, val| acc * get_digit_multiplier(*val) + val)
 }

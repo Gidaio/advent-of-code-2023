@@ -4,17 +4,16 @@ pub fn sum_calibration_values(state: State) -> Result<u32, Day1Error> {
     let results: Vec<u32> = state
         .0
         .iter()
-        .map(parse_calibration_value)
+        .map(|str| parse_calibration_value(str))
         .collect::<Result<Vec<u32>, Day1Error>>()?;
 
     Ok(results.iter().sum())
 }
 
-fn parse_calibration_value(line: &String) -> Result<u32, Day1Error> {
+fn parse_calibration_value(line: &str) -> Result<u32, Day1Error> {
     let tens = line
         .chars()
-        .filter(|char| char.is_digit(10))
-        .next()
+        .find(|char| char.is_ascii_digit())
         .ok_or(Day1Error::NoDigits)?
         .to_digit(10)
         // Unwrapping here is safe because we already know it's a digit.
@@ -22,14 +21,14 @@ fn parse_calibration_value(line: &String) -> Result<u32, Day1Error> {
         * 10;
     let ones = line
         .chars()
-        .filter(|char| char.is_digit(10))
+        .filter(|char| char.is_ascii_digit())
         .next_back()
         // Unwrapping here is safe because we know there's at least one digit from above.
         .unwrap()
         .to_digit(10)
         .unwrap();
 
-    return Ok(tens + ones);
+    Ok(tens + ones)
 }
 
 #[cfg(test)]

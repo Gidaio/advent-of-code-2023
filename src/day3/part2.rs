@@ -31,7 +31,7 @@ pub fn sum_gear_ratios(puzzle: Puzzle) -> Result<usize, io::Error> {
                 Some(
                     adjacent_numbers
                         .into_iter()
-                        .fold(1, |product, number| product * number),
+                        .product::<usize>(),
                 )
             } else {
                 None

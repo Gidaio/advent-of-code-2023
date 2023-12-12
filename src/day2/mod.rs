@@ -24,7 +24,7 @@ impl TryFrom<File> for PuzzleState {
         let buf = BufReader::new(value);
         let games = buf
             .lines()
-            .map(|line| line.map_err(|err| Day2Error::IoError(err))?.try_into())
+            .map(|line| line.map_err(Day2Error::IoError)?.try_into())
             .collect::<Result<Vec<Game>, Day2Error>>()?;
 
         Ok(PuzzleState(games))
@@ -51,7 +51,7 @@ impl TryFrom<String> for Game {
         let mut parts = value.split(": ");
         let game_id = parts.next().ok_or(Day2Error::NoGameID(value.clone()))?;
 
-        let id: usize = (&game_id[5..])
+        let id: usize = game_id[5..]
             .parse()
             .map_err(|_| Day2Error::NoGameID(value.clone()))?;
 
@@ -84,7 +84,7 @@ impl TryFrom<&str> for Pull {
         value
             .split(", ")
             .map(|cube| -> Result<(), Day2Error> {
-                let mut parts = cube.split(" ");
+                let mut parts = cube.split(' ');
                 let count = parts.next().ok_or(Day2Error::NoCount(String::from(cube)))?;
                 let color = parts.next().ok_or(Day2Error::NoColor(String::from(cube)))?;
 
@@ -138,4 +138,4 @@ impl Display for Day2Error {
     }
 }
 
-impl<'a> Error for Day2Error {}
+impl Error for Day2Error {}
