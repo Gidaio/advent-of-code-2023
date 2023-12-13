@@ -4,6 +4,7 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -72,6 +73,12 @@ fn main() {
         "Day 6, Part 2",
         day6::part2::count_winning_ways,
         "inputs/day6.txt",
+    );
+
+    run_puzzle(
+        "Day 7, Part 1",
+        day7::part1::calculate_total_winnings,
+        "inputs/day7.txt",
     );
 }
 

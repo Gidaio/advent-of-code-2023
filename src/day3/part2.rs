@@ -28,11 +28,7 @@ pub fn sum_gear_ratios(puzzle: Puzzle) -> Result<usize, io::Error> {
                 .collect::<Vec<usize>>();
 
             if adjacent_numbers.len() == 2 {
-                Some(
-                    adjacent_numbers
-                        .into_iter()
-                        .product::<usize>(),
-                )
+                Some(adjacent_numbers.into_iter().product::<usize>())
             } else {
                 None
             }
