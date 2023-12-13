@@ -17,14 +17,18 @@ pub fn calculate_total_winnings(mut puzzle: Puzzle) -> Result<usize, Day7Error> 
 }
 
 fn decide_hand_type(cards: &[Card]) -> HandType {
-    let unique_cards = HashSet::<Card>::from_iter(cards.iter().cloned());
+    let num_jokers = cards.iter().filter(|card| **card == Card::Jack).count();
+    let non_joker_types =
+        HashSet::<Card>::from_iter(cards.iter().filter(|card| **card != Card::Jack).cloned());
 
-    match unique_cards.len() {
-        // AAAAA
+    match non_joker_types.len() {
+        // JJJJJ 5K
+        0 => HandType::FiveOfAKind,
+        // AAAAA 5K AAAAJ 5K AAAJJ 5K AAJJJ 5K AJJJJ 5K
         1 => HandType::FiveOfAKind,
-        // AAAAK AAAKK AAKKK AKKKK
+        // AAAAK 4K AAAKK FH AAAKJ 4K AAKKK FH AAKKJ FH AAKJJ 4K AKKKK 4K AKKKJ FH AKKJJ 4k AKJJJ 4K
         2 => {
-            let max_count = unique_cards
+            let max_count = non_joker_types
                 .iter()
                 .map(|unique_card| {
                     cards
@@ -34,15 +38,15 @@ fn decide_hand_type(cards: &[Card]) -> HandType {
                 })
                 .max()
                 .unwrap();
-            if max_count == 4 {
+            if max_count + num_jokers == 4 {
                 HandType::FourOfAKind
             } else {
                 HandType::FullHouse
             }
         }
-        // AAAKQ AAKKQ AAKQQ AKKKQ AKKQQ AKQQQ
+        // AAAKQ 3K AAKKQ 2P AAKQQ 2P AKKKQ 3K AKKQQ 2P AKQQQ 3K AAKQJ 3K AKKQJ 3K AKQQJ 3K AKQJJ 3K
         3 => {
-            let max_count = unique_cards
+            let max_count = non_joker_types
                 .iter()
                 .map(|unique_card| {
                     cards
@@ -52,15 +56,15 @@ fn decide_hand_type(cards: &[Card]) -> HandType {
                 })
                 .max()
                 .unwrap();
-            if max_count == 3 {
+            if max_count + num_jokers == 3 {
                 HandType::ThreeOfAKind
             } else {
                 HandType::TwoPair
             }
         }
-        // AAKQJ AKKQJ AKQQJ AKQJJ
+        // AAKQT AKKQT AKQQT AKQTT AKQTJ
         4 => HandType::OnePair,
-        // AKQJT
+        // AKQT9
         5 => HandType::HighCard,
         _ => unreachable!("Too many unique cards!"),
     }
@@ -76,6 +80,6 @@ mod tests {
             .try_into()
             .unwrap();
         let result = calculate_total_winnings(puzzle).unwrap();
-        assert_eq!(result, 6440);
+        assert_eq!(result, 5905);
     }
 }

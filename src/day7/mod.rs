@@ -1,11 +1,11 @@
 pub mod part1;
+pub mod part2;
 
 use std::cmp::Ordering;
-use std::collections::HashSet;
 use std::error::Error;
-use std::io::{BufRead, BufReader, Error as IoError};
 use std::fmt::Display;
 use std::fs::File;
+use std::io::{BufRead, BufReader, Error as IoError};
 use std::num::ParseIntError;
 
 #[derive(Debug, PartialEq)]
@@ -14,7 +14,7 @@ pub struct Puzzle(Vec<Hand>);
 #[derive(Debug, Eq, PartialEq)]
 struct Hand {
     cards: Vec<Card>,
-    hand_type: HandType,
+    hand_type: Option<HandType>,
     bet: usize,
 }
 
@@ -34,7 +34,6 @@ enum Card {
     Ace = 14,
     King = 13,
     Queen = 12,
-    Jack = 11,
     Ten = 10,
     Nine = 9,
     Eight = 8,
@@ -44,6 +43,7 @@ enum Card {
     Four = 4,
     Three = 3,
     Two = 2,
+    Jack = 1,
 }
 
 #[derive(Debug)]
@@ -91,13 +91,11 @@ impl TryFrom<&str> for Hand {
             .map(|char| char.try_into())
             .collect::<Result<Vec<Card>, _>>()?;
 
-        let hand_type = decide_hand_type(&cards[..]);
-
         let bet: usize = bet.parse()?;
 
         Ok(Self {
             cards,
-            hand_type,
+            hand_type: None,
             bet,
         })
     }
@@ -175,86 +173,36 @@ impl From<IoError> for Day7Error {
     }
 }
 
-fn decide_hand_type(cards: &[Card]) -> HandType {
-    let unique_cards = HashSet::<Card>::from_iter(cards.iter().cloned());
-
-    match unique_cards.len() {
-        // AAAAA
-        1 => HandType::FiveOfAKind,
-        // AAAAK AAAKK AAKKK AKKKK
-        2 => {
-            let max_count = unique_cards
-                .iter()
-                .map(|unique_card| {
-                    cards
-                        .iter()
-                        .filter(|vec_card| unique_card == *vec_card)
-                        .count()
-                })
-                .max()
-                .unwrap();
-            if max_count == 4 {
-                HandType::FourOfAKind
-            } else {
-                HandType::FullHouse
-            }
-        }
-        // AAAKQ AAKKQ AAKQQ AKKKQ AKKQQ AKQQQ
-        3 => {
-            let max_count = unique_cards
-                .iter()
-                .map(|unique_card| {
-                    cards
-                        .iter()
-                        .filter(|vec_card| unique_card == *vec_card)
-                        .count()
-                })
-                .max()
-                .unwrap();
-            if max_count == 3 {
-                HandType::ThreeOfAKind
-            } else {
-                HandType::TwoPair
-            }
-        }
-        // AAKQJ AKKQJ AKQQJ AKQJJ
-        4 => HandType::OnePair,
-        // AKQJT
-        5 => HandType::HighCard,
-        _ => unreachable!("Too many unique cards!"),
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{Card, Hand, HandType, Puzzle};
+    use super::{Card, Hand, Puzzle};
 
     #[test]
     fn provided_example() {
         let expected = Puzzle(vec![
             Hand {
                 cards: vec![Card::Three, Card::Two, Card::Ten, Card::Three, Card::King],
-                hand_type: HandType::OnePair,
+                hand_type: None,
                 bet: 765,
             },
             Hand {
                 cards: vec![Card::Ten, Card::Five, Card::Five, Card::Jack, Card::Five],
-                hand_type: HandType::ThreeOfAKind,
+                hand_type: None,
                 bet: 684,
             },
             Hand {
                 cards: vec![Card::King, Card::King, Card::Six, Card::Seven, Card::Seven],
-                hand_type: HandType::TwoPair,
+                hand_type: None,
                 bet: 28,
             },
             Hand {
                 cards: vec![Card::King, Card::Ten, Card::Jack, Card::Jack, Card::Ten],
-                hand_type: HandType::TwoPair,
+                hand_type: None,
                 bet: 220,
             },
             Hand {
                 cards: vec![Card::Queen, Card::Queen, Card::Queen, Card::Jack, Card::Ace],
-                hand_type: HandType::ThreeOfAKind,
+                hand_type: None,
                 bet: 483,
             },
         ]);

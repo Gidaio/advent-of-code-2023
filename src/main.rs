@@ -80,6 +80,12 @@ fn main() {
         day7::part1::calculate_total_winnings,
         "inputs/day7.txt",
     );
+
+    run_puzzle(
+        "Day 7, Part 2",
+        day7::part2::calculate_total_winnings,
+        "inputs/day7.txt",
+    );
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
