@@ -1,8 +1,9 @@
+use std::collections::HashMap;
+
 use super::{Day8Error, Puzzle, LR};
 
 pub fn count_ghost_steps(puzzle: Puzzle) -> Result<usize, Day8Error> {
-    let mut steps = 0;
-    let mut current_locations: Vec<&str> = puzzle
+    let paths = puzzle
         .nodes
         .keys()
         .filter_map(|name| {
@@ -12,33 +13,63 @@ pub fn count_ghost_steps(puzzle: Puzzle) -> Result<usize, Day8Error> {
                 None
             }
         })
-        .collect();
+        .map(|name| {
+            let steps = count_steps_from(&puzzle, name)?;
+            Ok(steps)
+        })
+        .collect::<Result<Vec<_>, Day8Error>>()?;
 
-    while !all_at_destinations(&current_locations) {
+    Ok(paths.iter().fold(1, |curr, path_len| lcm(curr, *path_len)))
+}
+
+fn count_steps_from(puzzle: &Puzzle, start: &str) -> Result<usize, Day8Error> {
+    let mut current_location = start;
+    let mut steps = 0;
+    let end_point: usize;
+    let mut tracked_locations = HashMap::<(&str, usize), usize>::new();
+
+    loop {
+        // Find end point.
+        if is_end_node(current_location) {
+            println!("Ends at {}", current_location);
+            end_point = steps;
+            break;
+        }
+
+        // Save it and take a step.
+        tracked_locations.insert((current_location, steps % puzzle.path.len()), steps);
+
+        let node = puzzle
+            .nodes
+            .get(current_location)
+            .ok_or(Day8Error::MissingNode(String::from(current_location)))?;
         let direction = puzzle.path.get(steps % puzzle.path.len()).unwrap();
-        current_locations = current_locations
-            .into_iter()
-            .map(|loc| {
-                let node = puzzle
-                    .nodes
-                    .get(loc)
-                    .ok_or(Day8Error::MissingNode(String::from(loc)))?;
 
-                Ok(match direction {
-                    LR::Left => &node.left[..],
-                    LR::Right => &node.right[..],
-                })
-            })
-            .collect::<Result<Vec<&str>, Day8Error>>()?;
+        current_location = match direction {
+            LR::Left => &node.left,
+            LR::Right => &node.right,
+        };
 
         steps += 1;
     }
 
-    Ok(steps)
+    Ok(end_point)
 }
 
-fn all_at_destinations(locations: &[&str]) -> bool {
-    locations.iter().all(|loc| loc.ends_with('Z'))
+fn is_end_node(location: &str) -> bool {
+    location.ends_with('Z')
+}
+
+fn lcm(a: usize, b: usize) -> usize {
+    a / gcd(a, b) * b
+}
+
+fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
 }
 
 #[cfg(test)]
