@@ -31,7 +31,6 @@ fn count_steps_from(puzzle: &Puzzle, start: &str) -> Result<usize, Day8Error> {
     loop {
         // Find end point.
         if is_end_node(current_location) {
-            println!("Ends at {}", current_location);
             end_point = steps;
             break;
         }

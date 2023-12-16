@@ -6,6 +6,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -93,6 +94,18 @@ fn main() {
         "Day 8, Part 2",
         day8::part2::count_ghost_steps,
         "inputs/day8.txt",
+    );
+
+    run_puzzle(
+        "Day 9, Part 1",
+        day9::part1::sum_extensions,
+        "inputs/day9.txt",
+    );
+
+    run_puzzle(
+        "Day 9, Part 2",
+        day9::part2::sum_extensions,
+        "inputs/day9.txt",
     );
 }
 
