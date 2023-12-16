@@ -5,6 +5,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 use std::error::Error;
 use std::fmt::Display;
@@ -86,6 +87,9 @@ fn main() {
         day7::part2::calculate_total_winnings,
         "inputs/day7.txt",
     );
+
+    run_puzzle("Day 8, Part 1", day8::part1::count_steps, "inputs/day8.txt");
+    run_puzzle("Day 8, Part 2", day8::part2::count_ghost_steps, "inputs/day8.txt");
 }
 
 fn run_puzzle<In: TryFrom<File>, Out: Display, Err: Error>(
